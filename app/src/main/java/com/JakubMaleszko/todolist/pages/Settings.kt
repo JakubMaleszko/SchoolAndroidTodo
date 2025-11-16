@@ -19,6 +19,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
@@ -59,20 +60,40 @@ fun SettingsScreen(navHostController: NavHostController, context: Context) {
                 scrollBehavior = scrollBehavior,
                 navigationIcon = {
                     IconButton(onClick = { navHostController.popBackStack() }) {
-                        Icon(painter = painterResource(id = R.drawable.arrow_back), contentDescription = "Back button")
+                        Icon(
+                            painter = painterResource(id = R.drawable.arrow_back),
+                            contentDescription = "Back button"
+                        )
                     }
                 }
             )
         }
     ) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
+            // Dark mode option
             ListItem(
                 modifier = Modifier.clickable { showDarkModeModal = true },
                 headlineContent = { Text("App theme") },
-                trailingContent = {Text(appSettings.darkModeOption.name.lowercase())}
+                trailingContent = { Text(appSettings.darkModeOption.name.lowercase()) }
+            )
+
+            // Revert todo order switch
+            ListItem(
+                headlineContent = { Text("Revert todo order") },
+                trailingContent = {
+                    Switch(
+                        checked = appSettings.revertTodoOrder,
+                        onCheckedChange = { isChecked ->
+                            scope.launch {
+                                saveSettings(context, appSettings.copy(revertTodoOrder = isChecked))
+                            }
+                        }
+                    )
+                }
             )
         }
 
+        // Modal for dark mode selection
         if (showDarkModeModal) {
             ModalBottomSheet(onDismissRequest = { showDarkModeModal = false }) {
                 val radioOptions = listOf(DarkModeOption.SYSTEM, DarkModeOption.LIGHT, DarkModeOption.DARK)
@@ -88,8 +109,10 @@ fun SettingsScreen(navHostController: NavHostController, context: Context) {
                                     selected = (option == selectedOption),
                                     onClick = {
                                         onOptionSelected(option)
-                                        // Save to DataStore immediately
-                                        scope.launch { saveSettings(context, AppSettings(option)) }
+                                        scope.launch {
+                                            // Save the new darkModeOption, preserve other settings
+                                            saveSettings(context, appSettings.copy(darkModeOption = option))
+                                        }
                                     },
                                     role = Role.RadioButton
                                 )

@@ -22,7 +22,9 @@ import androidx.navigation.NavHostController
 import com.JakubMaleszko.todolist.R
 import com.JakubMaleszko.todolist.Routes
 import com.JakubMaleszko.todolist.components.TodoListItem
+import com.JakubMaleszko.todolist.data.AppSettings
 import com.JakubMaleszko.todolist.data.TodoItem
+import com.JakubMaleszko.todolist.data.getSettings
 import com.JakubMaleszko.todolist.data.getTodos
 import com.JakubMaleszko.todolist.data.saveTodos
 import kotlinx.coroutines.launch
@@ -33,6 +35,8 @@ fun HomeScreen(navHostController: NavHostController, context: Context) {
     val todosFlow = remember { getTodos(context) }
     val todos by todosFlow.collectAsState(initial = emptyList())
 
+    val appSettings by getSettings(context).collectAsState(initial = AppSettings())
+
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     val scope = rememberCoroutineScope()
@@ -40,6 +44,8 @@ fun HomeScreen(navHostController: NavHostController, context: Context) {
     var showModal by remember { mutableStateOf(false) }
     var newTitle by remember { mutableStateOf("") }
     var newDescription by remember { mutableStateOf("") }
+
+    val displayTodos = if (!appSettings.revertTodoOrder) todos.reversed() else todos
 
     Scaffold(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection), topBar = {
         LargeTopAppBar(
@@ -58,9 +64,8 @@ fun HomeScreen(navHostController: NavHostController, context: Context) {
             )
         }
     }) { innerPadding ->
-
-        LazyColumn(modifier = Modifier.padding(innerPadding), reverseLayout = true) {
-            items(todos, key = { it.id }) { todo ->
+        LazyColumn(modifier = Modifier.padding(innerPadding), reverseLayout = false ) {
+            items(displayTodos, key = { it.id }) { todo ->
                 TodoListItem(
                     todo = todo, onCheckedChange = { checked ->
                         val updated =

@@ -21,7 +21,8 @@ enum class DarkModeOption {
 
 @Serializable
 data class AppSettings(
-    val darkModeOption: DarkModeOption = DarkModeOption.SYSTEM
+    val darkModeOption: DarkModeOption = DarkModeOption.SYSTEM,
+    val revertTodoOrder: Boolean = false
 )
 
 val Context.settingsDataStore by preferencesDataStore(name = "settings")
