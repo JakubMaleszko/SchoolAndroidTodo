@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.JakubMaleszko.todolist.R
+import com.JakubMaleszko.todolist.Routes
 import com.JakubMaleszko.todolist.components.TodoListItem
 import com.JakubMaleszko.todolist.data.TodoItem
 import com.JakubMaleszko.todolist.data.getTodos
@@ -36,16 +37,21 @@ fun HomeScreen(navHostController: NavHostController, context: Context) {
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     val scope = rememberCoroutineScope()
 
-    var showDialog by remember { mutableStateOf(false) }
+    var showModal by remember { mutableStateOf(false) }
     var newTitle by remember { mutableStateOf("") }
     var newDescription by remember { mutableStateOf("") }
 
     Scaffold(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection), topBar = {
         LargeTopAppBar(
-            title = { Text("Todo") }, scrollBehavior = scrollBehavior
+            title = { Text("Todo") }, scrollBehavior = scrollBehavior, actions = {
+                IconButton(onClick = { navHostController.navigate(Routes.Settings) }) {
+                    Icon(painter = painterResource(id = R.drawable.settings),
+                        contentDescription = "Settings button")
+                }
+            }
         )
     }, floatingActionButton = {
-        FloatingActionButton(onClick = { showDialog = true }) {
+        FloatingActionButton(onClick = { showModal= true }) {
             Icon(
                 painter = painterResource(id = R.drawable.edit),
                 contentDescription = "Add Todo Button",
@@ -71,9 +77,9 @@ fun HomeScreen(navHostController: NavHostController, context: Context) {
         }
     }
 
-    if (showDialog) {
+    if (showModal) {
         ModalBottomSheet(
-            onDismissRequest = { showDialog = false },
+            onDismissRequest = { showModal = false },
         ) {
             Column(
                 modifier = Modifier
@@ -119,7 +125,7 @@ fun HomeScreen(navHostController: NavHostController, context: Context) {
                             scope.launch { saveTodos(context, todos + newTodo) }
                             newTitle = ""
                             newDescription = ""
-                            showDialog = false
+                            showModal = false
                         }
                     },
                     modifier = Modifier
