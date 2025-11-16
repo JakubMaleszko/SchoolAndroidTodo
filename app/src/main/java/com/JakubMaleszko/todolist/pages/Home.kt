@@ -55,76 +55,82 @@ fun HomeScreen(navHostController: NavHostController, context: Context) {
 
         LazyColumn(modifier = Modifier.padding(innerPadding), reverseLayout = true) {
             items(todos, key = { it.id }) { todo ->
-                TodoListItem(todo = todo, onCheckedChange = { checked ->
-                    val updated =
-                        todos.map { if (it.id == todo.id) it.copy(isDone = checked) else it }
-                    scope.launch { saveTodos(context, updated) }
-                }, onDelete = {
-                    val updated = todos.filter { it.id != todo.id }
-                    scope.launch { saveTodos(context, updated) }
-                })
-            }
-        }
-
-        if (showDialog) {
-            ModalBottomSheet(
-                onDismissRequest = { showDialog = false },
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 48.dp, vertical = 16.dp),
-
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(text = "Add todo", style = MaterialTheme.typography.displaySmall)
-                    Spacer(modifier = Modifier.height(8.dp))
-                    OutlinedTextField(
-                        value = newTitle,
-                        onValueChange = { newTitle = it },
-                        label = { Text("Title") },
-                        singleLine = true,
-                        modifier = Modifier.fillMaxWidth(),
-                        keyboardOptions = KeyboardOptions(
-                            capitalization = KeyboardCapitalization.Sentences
-                        )
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    OutlinedTextField(
-                        value = newDescription,
-                        onValueChange = { newDescription = it },
-                        label = { Text("Description") },
-                        singleLine = false,
-                        modifier = Modifier.fillMaxWidth(),
-                        keyboardOptions = KeyboardOptions(
-                            capitalization = KeyboardCapitalization.Sentences
-                        )
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Button(
-                        onClick = {
-                            if (newTitle.isNotBlank()) {
-                                val newTodo = TodoItem(id = (todos.maxOfOrNull { it.id } ?: 0) + 1,
-                                    title = newTitle,
-                                    description = newDescription)
-                                scope.launch { saveTodos(context, todos + newTodo) }
-                                newTitle = ""
-                                newDescription = ""
-                                showDialog = false
-                            }
-                        }, modifier = Modifier
-                            .fillMaxWidth()
-                            .height(56.dp)
-                    ) {
-                        Text("Add", fontSize = 18.sp)
-                    }
-                }
+                TodoListItem(
+                    todo = todo, onCheckedChange = { checked ->
+                        val updated =
+                            todos.map { if (it.id == todo.id) it.copy(isDone = checked) else it }
+                        scope.launch { saveTodos(context, updated) }
+                    }, onDelete = {
+                        val updated = todos.filter { it.id != todo.id }
+                        scope.launch { saveTodos(context, updated) }
+                    },
+                    modifier = Modifier.animateItem()
+                )
             }
 
         }
     }
+
+    if (showDialog) {
+        ModalBottomSheet(
+            onDismissRequest = { showDialog = false },
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 48.dp, vertical = 16.dp),
+
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(text = "Add todo", style = MaterialTheme.typography.displaySmall)
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = newTitle,
+                    onValueChange = { newTitle = it },
+                    label = { Text("Title") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions(
+                        capitalization = KeyboardCapitalization.Sentences
+                    )
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                OutlinedTextField(
+                    value = newDescription,
+                    onValueChange = { newDescription = it },
+                    label = { Text("Description") },
+                    singleLine = false,
+                    modifier = Modifier.fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions(
+                        capitalization = KeyboardCapitalization.Sentences
+                    )
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(
+                    onClick = {
+                        if (newTitle.isNotBlank()) {
+                            val newTodo = TodoItem(id = (todos.maxOfOrNull { it.id } ?: 0) + 1,
+                                title = newTitle,
+                                description = newDescription)
+                            scope.launch { saveTodos(context, todos + newTodo) }
+                            newTitle = ""
+                            newDescription = ""
+                            showDialog = false
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                ) {
+                    Text("Add", fontSize = 18.sp)
+                }
+            }
+        }
+
+    }
 }
+

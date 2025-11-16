@@ -7,7 +7,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.JakubMaleszko.todolist.pages.HomeScreen
 
-// Use a simple String for routes
 object Routes {
     const val Home = "home"
 }

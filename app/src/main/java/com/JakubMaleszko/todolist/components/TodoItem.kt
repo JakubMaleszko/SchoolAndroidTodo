@@ -13,10 +13,10 @@ import com.JakubMaleszko.todolist.R
 
 @Composable
 fun TodoListItem(
-    todo: TodoItem, onCheckedChange: (Boolean) -> Unit, onDelete: () -> Unit
+    todo: TodoItem, onCheckedChange: (Boolean) -> Unit, onDelete: () -> Unit, modifier: Modifier
 ) {
     Card(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 4.dp),
         shape = RoundedCornerShape(12.dp),
