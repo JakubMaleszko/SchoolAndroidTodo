@@ -1,7 +1,7 @@
 package com.JakubMaleszko.todolist
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -13,16 +13,16 @@ object Routes {
 }
 
 @Composable
-fun AppNavHost(modifier: Modifier = Modifier) {
+fun AppNavHost() {
     val navController = rememberNavController()
+    val context = LocalContext.current
 
     NavHost(
         navController = navController,
         startDestination = Routes.Home,
-        modifier = modifier
     ) {
         composable(Routes.Home) {
-            HomeScreen()
+            HomeScreen(navController, context)
         }
     }
 }
